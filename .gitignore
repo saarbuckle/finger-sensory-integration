@@ -1,0 +1,12 @@
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Files that might appear in the root of a volume
+.fseventsd
+.Trashes
+.VolumeIcon.icns
+
+# matlab autosave
+.asv
