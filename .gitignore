@@ -9,4 +9,4 @@
 .VolumeIcon.icns
 
 # matlab autosave
-.asv
+*.asv
