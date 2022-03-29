@@ -240,14 +240,16 @@ switch what
         %% do single-finger selectivity analysis for all regions and participants
         
         % set analysis parameters
+        rng(99); % specify seed for reproducability
         numSim = 1000; % # simulated datasets per model per participant (random and selective tuning models)
         conds  = 1:5;  % conditions to analyze (single finger conditions)
         numConds = numel(conds);
         fthres = 0.95; % % cutoff value for f-crit (take top 5% of voxels)
 
-        % load single-finger frmri activity patterns (univariately prewhitened) for each region
         T = [];
-        for ii=1:6
+        for ii=1:6 % for each region...
+
+            % load single-finger frmri activity patterns (univariately prewhitened)
             [Y,partVec,condVec,sn] = fsi_ana('misc:load_fmriPatterns',...
                                         'roi',ii,'betaType','univariate_whitened',...
                                         'conditions',conds);
@@ -269,7 +271,7 @@ switch what
         end
 
         % do single-finger selectivity analysis
-        D = []; % output structure
+        D = []; % output structure for selectivity values
         for ii = 1:numel(T.sn)
             % loop through each row (one region from one participant)
             t = getrow(T,ii);
@@ -286,13 +288,14 @@ switch what
             numVoxSig  = sum(F>=Fcrit); % how many voxels are selected?
             t.beta     = t.beta(:,F>=Fcrit); % drop non-selected voxels
 
-            % zero-centre the voxel tuning curves in each run
-            C0 = indicatorMatrix('identity',t.run);
-            t.beta = t.beta -C0*pinv(C0)*t.beta;
-
+           
             % some simulation params for later
             numVoxSim = ceil(numVoxSig/numConds)*numConds; % small rounding so equal # of voxels per condition (for sparse patterns)
             numRun    = numel(unique(t.run));
+
+            % zero-centre the voxel tuning curves in each run
+            C0 = indicatorMatrix('identity',t.run);
+            t.beta = t.beta -C0*pinv(C0)*t.beta;
 
             % calculate signal and noise strengths
             [var_noise,var_sig] = fsi_ana('selectivity:estVariances',t.beta,t.cond,t.run);
@@ -300,8 +303,8 @@ switch what
             
             % calc avg. selectivity of voxels
             t = tapply(t,{'cond'},{'beta','mean'}); % avg. voxel tuning curves across runs
-            sel_beta = fsi_ana('selectivity:estSelectivity',t.beta);
-            sel_beta = mean(sel_beta);
+            sel_beta_voxel = fsi_ana('selectivity:estSelectivity',t.beta);
+            sel_beta = mean(sel_beta_voxel);
             
             % calc expected selectivity under random tuning (with iid noise)
             sel_random = fsi_ana('selectivity:expectedValue_random',var_noise,var_sig,numVoxSim,numRun,numSim,fthres);
@@ -340,6 +343,7 @@ switch what
             if verbose
                 fprintf('s%02d\t%s\t%2.2f\t\t%2.4f\t%2.4f\t%1.5f\n',d.sn,roiNames{d.roi},d.propVox*100,var_sig,var_noise,sel_beta);
             end
+
         end
 
         % return output
@@ -371,8 +375,8 @@ switch what
         muK = zeros(numCond,numVox); % condition means
         SSR = zeros(1,numVox);       % ssr vector (common across conditions)
         n   = zeros(1,numCond);      % # observations per condition
-        C0  = indicatorMatrix('identity',pV);
-        Y   = Y - C0*pinv(C0)*Y; 
+        %C0  = indicatorMatrix('identity',pV);
+        %Y   = Y - C0*pinv(C0)*Y; 
         for ii=1:numCond
             c         = conds(ii);
             idx       = find(cV==c);
@@ -450,12 +454,12 @@ switch what
         sel_random = nan(1,numSim); % pre-allocate
         for s = 1:numSim
             d  = getrow(D,D.simNum==s);
-            % mean-centre each voxel across runs
-            C0  = indicatorMatrix('identity',d.run); 
-            d.Y = d.Y -C0*pinv(C0)*d.Y; % remove run means
             % voxel selection
             [F,Fcrit] = fsi_ana('selectivity:ftest',d.Y,d.cond,d.run,fthres);
             sigIdx = F>=Fcrit;
+            % mean-centre each voxel across runs
+            C0  = indicatorMatrix('identity',d.run); 
+            d.Y = d.Y -C0*pinv(C0)*d.Y; % remove run means
             % calc selectivity
             Cd = indicatorMatrix('identity',d.cond);
             Ysig = pinv(Cd)*d.Y(:,sigIdx); % avg. simulated tuning curves across runs for selected voxels
@@ -484,12 +488,12 @@ switch what
         sel_selective = nan(1,numSim);
         for s = 1:numSim
             d      = getrow(D,D.simNum==s);
-            % mean-centre each voxel across runs
-            C0     = indicatorMatrix('identity',d.run); 
-            d.Y    = d.Y -C0*pinv(C0)*d.Y; % remove run means
             % voxel selection
             [F,Fcrit] = fsi_ana('selectivity:ftest',d.Y,d.cond,d.run,fthres);
             sigIdx = F>=Fcrit;
+            % mean-centre each voxel across runs
+            C0     = indicatorMatrix('identity',d.run); 
+            d.Y    = d.Y -C0*pinv(C0)*d.Y; % remove run means
             % calc selectivity
             Cd = indicatorMatrix('identity',d.cond);
             Ysig = pinv(Cd)*d.Y(:,sigIdx); % avg. simulated tuning curves across runs for selected voxels
