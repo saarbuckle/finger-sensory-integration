@@ -375,8 +375,6 @@ switch what
         muK = zeros(numCond,numVox); % condition means
         SSR = zeros(1,numVox);       % ssr vector (common across conditions)
         n   = zeros(1,numCond);      % # observations per condition
-        %C0  = indicatorMatrix('identity',pV);
-        %Y   = Y - C0*pinv(C0)*Y; 
         for ii=1:numCond
             c         = conds(ii);
             idx       = find(cV==c);
