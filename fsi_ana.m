@@ -128,7 +128,7 @@ switch what
         set(gca,'xticklabel',roiNames);
         xlabel('Brodmann area')
         ylabel('selectivity index');
-        ylim([0.55 0.85]);
+        ylim([0.55 0.8]);
         hold off
         legend off
         
@@ -230,8 +230,8 @@ switch what
         fprintf('mean MISS RATE:         %1.2f \x00B1 %1.2f%% (of     mismatch trials) \n',mean(S.prop_miss)*100,stderr(S.prop_miss)*100);
         fprintf('\nmean ERROR rate (FA & misses): %1.2f \x00B1 %1.2f%% [of total trials]\n',mean(S.prop_error)*100,stderr(S.prop_error)*100);
         fprintf('mean THUMB PRESS rate: %1.2f \x00B1 %1.2f%% [of total trials]\n',mean(S.prop_thumbPress)*100,stderr(S.prop_thumbPress)*100);
-        fprintf('\nmean d prime:          %1.2f \x00B1 %1.2f%% \n',mean(S.dprime_adj),stderr(S.dprime_adj));
-        fprintf('mean bias (c):         %1.2f \x00B1 %1.2f%% \n',mean(S.bias_c_adj),stderr(S.bias_c_adj));
+        fprintf('\nmean d prime:          %1.2f \x00B1 %1.2f \n',mean(S.dprime_adj),stderr(S.dprime_adj));
+        fprintf('mean bias (c):         %1.2f \x00B1 %1.2f \n',mean(S.bias_c_adj),stderr(S.bias_c_adj));
 
         % return data structures
         varargout = {S,D,Dall};
@@ -1089,4 +1089,47 @@ function rss = modelLossRSS(theta,U,Utrain,modelName)
     Ypred  = Ypred-mean(Ypred,1); % rmv voxel means
     Utrain = Utrain-mean(Utrain,1);
     rss    = sum(sum((Utrain-Ypred).^2)); % calculate L2 loss (RSS)
+end
+function IPM=rsa_squareIPM(IPM_vec)
+% converts set of CMs (stacked along the 3rd dimension)
+% to lower-triangular form (set of row vectors)
+if isstruct(IPM_vec)
+   N=length(IPM)
+   [n,m]=size(IPM_vec(1).IPM);
+    if (n~=1)
+        error('IPM need to be row-vectors'); 
+    end; 
+    K = floor(sqrt(m*2));
+    if (K*(K-1)/2+K~=m) 
+        error('bad vector size'); 
+    end; 
+    indx=tril(true(K),0);
+    IPM=IPM_vec;
+    for i=1:nIPM
+        A            = zeros(K);                      % make matrix 
+        A(indx>0)    = IPM_vec(1,:,i);                % Assign the lower triag
+        Atrans       = A';                % Now make symmetric           
+        A(A==0)      = Atrans(A==0);    
+        IPM(i).IPM   = A; 
+    end
+else
+    % bare
+    [n,m,nIPM]=size(IPM_vec);
+    if (n~=1)
+        error('IPM need to be row-vectors'); 
+    end; 
+    K = floor(sqrt(m*2));
+    if (K*(K-1)/2+K~=m) 
+        error('bad vector size'); 
+    end; 
+    indx=tril(true(K),0);
+    IPM=[];
+    for i=1:nIPM
+        A            = zeros(K);                      % make matrix 
+        A(indx>0)    = IPM_vec(1,:,i);                % Assign the lower triag
+        Atrans       = A';                % Now make symmetric           
+        A(A==0)      = Atrans(A==0);    
+        IPM(:,:,i)   = A; 
+    end
+end
 end
