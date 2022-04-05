@@ -18,11 +18,11 @@ The analysis code is in the following file:
 
 This code can reproduce the key analyses reportd in the paper, namely the single-finger selectivity and representational model analyses and plots from the first-level GLM activity patterns. See the Usage section for more information.
 
-## External dependencies
+## Dependencies
 The code in this repo uses functions from these (freely) available toolboxes. Be sure to add them to your path.
-* [PCM toolbox](https://github.com/jdiedrichsen/pcm_toolbox)
 * [RSA toolbox](https://github.com/rsagroup/rsatoolbox)
-* [Plotlib toolbox](https://github.com/nejaz1/plotlib) - for plotting
+* [PCM toolbox](https://github.com/jdiedrichsen/pcm_toolbox/tree/develop) - develop branch
+* [Plotlib toolbox](https://github.com/nejaz1/plotlib/tree/dev) - dev branch, for plotting
 * [Dataframe toolbox](https://github.com/jdiedrichsen/dataframe) - for pandas-like functionality
 
 ## Usage
