@@ -2,10 +2,10 @@
 
 This repository contains matlab code and pre-processed data to reprodce key analyses and figures in the paper: 
 
-Arbuckle, Pruszynski, & Diedrichsen (2022). *Mapping the integration of sensory information across fingers in human sensorimotor cortex.* Journal of Neuroscience. [[link to paper]()]
+Arbuckle, Pruszynski, & Diedrichsen (2022). *Mapping the integration of sensory information across fingers in human sensorimotor cortex.* Journal of Neuroscience. [[link to paper](https://www.biorxiv.org/content/10.1101/2021.07.07.451552v2)]
 
 ## Data
-The [data folder]() contains the following files:
+The [data folder](/data) contains the following files:
 * `beha_all.mat` : behavioural data for all trials and participants
 * `fmri_BAxx_betas.mat` : activity patterns from brodmann area *xx*
 * `fmri_selectivity.mat` : single-finger selectivity results
