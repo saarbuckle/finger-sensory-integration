@@ -2,7 +2,7 @@
 
 This repository contains matlab code and pre-processed data to reprodce key analyses and figures in the paper: 
 
-Arbuckle, Pruszynski, & Diedrichsen (2022). *Mapping the integration of sensory information across fingers in human sensorimotor cortex.* Journal of Neuroscience. [[link to paper](https://www.biorxiv.org/content/10.1101/2021.07.07.451552v2)]
+Arbuckle, Pruszynski, & Diedrichsen (2022). *Mapping the integration of sensory information across fingers in human sensorimotor cortex.* Journal of Neuroscience. [[link to paper](https://doi.org/10.1523/JNEUROSCI.2152-21.2022)]
 
 ## Data
 The [data folder](/data) contains the following files:
